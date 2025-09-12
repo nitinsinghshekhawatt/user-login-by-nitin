@@ -3,174 +3,275 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Premium Transport Login</title>
+  <title>Premium Multi-Panel Login</title>
   <style>
     body {
       margin: 0;
-      font-family: "Poppins", sans-serif;
+      font-family: 'Poppins', sans-serif;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(-45deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
-      background-size: 400% 400%;
-      animation: gradientMove 12s ease infinite;
-      position: relative;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      overflow: hidden;
     }
 
     body::before {
       content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      background: url("https://i.ibb.co/DVYxSVr/bus-map-bg.jpg") no-repeat center center/cover;
-      opacity: 0.2;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, #667eea, #764ba2, #43cea2, #185a9d, #667eea);
+      animation: rotateGlow 15s linear infinite;
+      opacity: 0.25;
       z-index: 0;
     }
 
+    @keyframes rotateGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     .container {
-      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      width: 90%;
+      max-width: 1100px;
       z-index: 1;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(15px);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
-      width: 340px;
-      text-align: center;
-      color: #fff;
-      transition: 0.4s ease-in-out;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    .container h2 {
-      margin-bottom: 25px;
-      font-size: 28px;
-      color: #fff;
-      letter-spacing: 1px;
-      font-weight: 600;
-    }
-
-    .dropdown {
       position: relative;
-      width: 100%;
-      margin-bottom: 15px;
     }
 
-    .dropdown select {
-      width: 100%;
+    .panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 18px;
+      box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
+      padding: 35px 25px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .panel:hover {
+      transform: translateY(-10px);
+      box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .panel h2 {
+      margin-bottom: 25px;
+      color: #4b0082;
+      font-size: 22px;
+    }
+
+    input, textarea {
+      width: 90%;
       padding: 12px;
-      border: none;
+      margin: 10px 0;
       border-radius: 10px;
-      font-size: 16px;
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      appearance: none;
-      cursor: pointer;
-    }
-
-    .dropdown::after {
-      content: "▼";
-      font-size: 14px;
-      color: #fff;
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 12px 0;
-      border: none;
+      border: 1px solid #ccc;
       outline: none;
-      border-radius: 10px;
-      font-size: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
-    }
-
-    input::placeholder {
-      color: #ddd;
+      font-size: 14px;
     }
 
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
       border: none;
+      padding: 12px 30px;
+      margin-top: 15px;
       border-radius: 10px;
-      font-size: 16px;
-      color: white;
-      font-weight: bold;
       cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
       transition: 0.3s;
     }
 
     button:hover {
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
       transform: scale(1.05);
     }
 
-    /* Animations */
-    @keyframes gradientMove {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    .fullscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      z-index: 10;
+      padding: 20px;
+      overflow-y: auto;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .fullscreen button {
+      margin-top: 12px;
+      padding: 12px 25px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
     }
 
-    /* Role color themes */
-    .admin-theme { border-top: 5px solid #ff4d4d; }
-    .passenger-theme { border-top: 5px solid #00c6ff; }
-    .driver-theme { border-top: 5px solid #2ecc71; }
+    .track-btn { background: #43cea2; color: white; }
+    .report-btn { background: #ff9800; color: white; }
+    .back-btn { background: #222; color: white; }
+    .submit-btn { background: #e63946; color: white; }
+    .delete-btn { background: #d32f2f; color: white; margin-left: 10px; }
+
+    .form-box {
+      background: rgba(255, 255, 255, 0.95);
+      color: #333;
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      text-align: left;
+    }
+
+    .form-box h3 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #4b0082;
+    }
+
+    .complaint-box {
+      background: white;
+      color: black;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container passenger-theme" id="loginBox">
-    <h2>🚍 Premium Login</h2>
-
-    <div class="dropdown">
-      <select id="role" onchange="changeTheme()">
-        <option value="admin">👨‍💼 Admin</option>
-        <option value="passenger" selected>👤 Passenger</option>
-        <option value="driver">👨‍✈️ Driver</option>
-      </select>
+  <div class="container">
+    <div class="panel">
+      <h2>Passenger Login</h2>
+      <input type="text" id="pUser" placeholder="Enter Username">
+      <input type="password" id="pPass" placeholder="Enter Password">
+      <button onclick="openPassenger()">Login</button>
     </div>
 
-    <input type="text" placeholder="Username" required>
-    <input type="password" placeholder="Password" required>
+    <div class="panel">
+      <h2>Driver Login</h2>
+      <input type="text" id="dUser" placeholder="Enter Driver ID">
+      <input type="password" id="dPass" placeholder="Enter Password">
+      <button onclick="openDriver()">Login</button>
+    </div>
 
-    <button onclick="login()">Login</button>
+    <div class="panel">
+      <h2>Admin Login</h2>
+      <input type="text" id="aUser" placeholder="Enter Admin ID">
+      <input type="password" id="aPass" placeholder="Enter Password">
+      <button onclick="openAdmin()">Login</button>
+    </div>
   </div>
 
+  <div id="output"></div>
+
   <script>
-    function changeTheme() {
-      const role = document.getElementById('role').value;
-      const box = document.getElementById('loginBox');
-      box.className = "container"; // reset first
-      if (role === "admin") box.classList.add("admin-theme");
-      if (role === "passenger") box.classList.add("passenger-theme");
-      if (role === "driver") box.classList.add("driver-theme");
+    let complaints = []; // store complaints
+
+    function openPassenger() {
+      document.getElementById("output").innerHTML = `
+        <div class="fullscreen">
+          <h2>🚍 Passenger Dashboard</h2>
+          <p>Welcome! Choose an option below:</p>
+          <button class="track-btn" onclick="alert('Bus tracking coming soon!')">Track Your Bus</button>
+          <button class="report-btn" onclick="openReportForm()">Report Driver</button>
+          <button class="back-btn" onclick="closePage()">⬅ Back</button>
+        </div>`;
     }
 
-    function login() {
-      const role = document.getElementById('role').value;
-      let roleName = "";
-      if (role === "admin") roleName = "👨‍💼 Admin";
-      if (role === "passenger") roleName = "👤 Passenger";
-      if (role === "driver") roleName = "👨‍✈️ Driver";
+    function openReportForm() {
+      document.getElementById("output").innerHTML = `
+        <div class="fullscreen">
+          <div class="form-box">
+            <h3>📝 Report Driver</h3>
+            <label>Driver Name:</label>
+            <input type="text" id="driverName" placeholder="Enter Driver Name">
+            <label>Bus Number:</label>
+            <input type="text" id="busNo" placeholder="Enter Bus Number">
+            <label>Complaint:</label>
+            <textarea id="complaint" rows="4" placeholder="Write your complaint here..."></textarea>
+            <button class="submit-btn" onclick="submitReport()">Submit Report</button>
+            <button class="back-btn" onclick="openPassenger()">⬅ Back</button>
+          </div>
+        </div>`;
+    }
 
-      alert("✅ Welcome! Logged in as " + roleName);
+    function submitReport() {
+      let name = document.getElementById("driverName").value;
+      let bus = document.getElementById("busNo").value;
+      let complaint = document.getElementById("complaint").value;
+
+      if(name && bus && complaint) {
+        complaints.push({name, bus, complaint});
+        alert("✅ Report Submitted Successfully!");
+        openPassenger();
+      } else {
+        alert("⚠ Please fill all fields before submitting.");
+      }
+    }
+
+    function openDriver() {
+      document.getElementById("output").innerHTML = `
+        <div class="fullscreen">
+          <h2>👨‍✈ Driver Dashboard</h2>
+          <p><b>Name:</b> Ramesh Kumar</p>
+          <p><b>License No:</b> RJ14-2023-4589</p>
+          <p><b>Phone:</b> +91 9876543210</p>
+          <p><b>Aadhaar:</b> XXXX-XXXX-1234</p>
+          <p><b>Address:</b> Jaipur, Rajasthan</p>
+          <p><b>Bus Plate:</b> RJ14 AB 4590</p>
+          <button class="back-btn" onclick="closePage()">⬅ Back</button>
+        </div>`;
+    }
+
+    function openAdmin() {
+      let complaintHTML = complaints.length > 0 
+        ? complaints.map((c, index) => `
+          <div class="complaint-box">
+            <div>
+              <p><b>Driver:</b> ${c.name}</p>
+              <p><b>Bus:</b> ${c.bus}</p>
+              <p><b>Complaint:</b> ${c.complaint}</p>
+            </div>
+            <button class="delete-btn" onclick="deleteComplaint(${index})">Delete</button>
+          </div>
+        `).join("")
+        : "<p>No complaints submitted yet.</p>";
+
+      document.getElementById("output").innerHTML = `
+        <div class="fullscreen">
+          <h2>⚙ Admin Dashboard</h2>
+          <button style="background:#e63946;color:white;">❌ Remove Driver</button>
+          <h3 style="margin-top:20px;">📋 Passenger Complaints</h3>
+          ${complaintHTML}
+          <button class="back-btn" onclick="closePage()">⬅ Back</button>
+        </div>`;
+    }
+
+    function deleteComplaint(index) {
+      complaints.splice(index, 1);
+      openAdmin();
+    }
+
+    function closePage() {
+      document.getElementById("output").innerHTML = "";
     }
   </script>
 
