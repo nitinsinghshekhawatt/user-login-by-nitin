@@ -3,76 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi Login - Transport Tracker</title>
+  <title>Premium Transport Login</title>
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #4facfe, #00f2fe);
+      font-family: "Poppins", sans-serif;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      background: linear-gradient(-45deg, #1e3c72, #2a5298, #00c6ff, #0072ff);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: url("https://i.ibb.co/DVYxSVr/bus-map-bg.jpg") no-repeat center center/cover;
+      opacity: 0.2;
+      z-index: 0;
     }
 
     .container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-      width: 300px;
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+      width: 340px;
       text-align: center;
+      color: #fff;
+      transition: 0.4s ease-in-out;
+      animation: fadeIn 1s ease-in-out;
     }
 
-    h2 {
-      margin-bottom: 20px;
-      color: #333;
+    .container h2 {
+      margin-bottom: 25px;
+      font-size: 28px;
+      color: #fff;
+      letter-spacing: 1px;
+      font-weight: 600;
     }
 
-    select, input {
+    .dropdown {
+      position: relative;
       width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .dropdown select {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .dropdown::after {
+      content: "▼";
       font-size: 14px;
+      color: #fff;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 12px 0;
+      border: none;
+      outline: none;
+      border-radius: 10px;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    input::placeholder {
+      color: #ddd;
     }
 
     button {
       width: 100%;
-      padding: 10px;
-      background: #4facfe;
+      padding: 12px;
+      margin-top: 15px;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
       border: none;
-      color: white;
+      border-radius: 10px;
       font-size: 16px;
-      border-radius: 6px;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
       transition: 0.3s;
     }
 
     button:hover {
-      background: #00c6ff;
+      transform: scale(1.05);
     }
 
-    .role-label {
-      font-weight: bold;
-      margin-top: 10px;
-      display: block;
-      color: #555;
+    /* Animations */
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Role color themes */
+    .admin-theme { border-top: 5px solid #ff4d4d; }
+    .passenger-theme { border-top: 5px solid #00c6ff; }
+    .driver-theme { border-top: 5px solid #2ecc71; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Login</h2>
+  <div class="container passenger-theme" id="loginBox">
+    <h2>🚍 Premium Login</h2>
 
-    <label class="role-label">Select Role</label>
-    <select id="role">
-      <option value="admin">Admin</option>
-      <option value="passenger">Passenger</option>
-      <option value="driver">Driver</option>
-    </select>
+    <div class="dropdown">
+      <select id="role" onchange="changeTheme()">
+        <option value="admin">👨‍💼 Admin</option>
+        <option value="passenger" selected>👤 Passenger</option>
+        <option value="driver">👨‍✈️ Driver</option>
+      </select>
+    </div>
 
     <input type="text" placeholder="Username" required>
     <input type="password" placeholder="Password" required>
@@ -81,9 +154,23 @@
   </div>
 
   <script>
+    function changeTheme() {
+      const role = document.getElementById('role').value;
+      const box = document.getElementById('loginBox');
+      box.className = "container"; // reset first
+      if (role === "admin") box.classList.add("admin-theme");
+      if (role === "passenger") box.classList.add("passenger-theme");
+      if (role === "driver") box.classList.add("driver-theme");
+    }
+
     function login() {
       const role = document.getElementById('role').value;
-      alert("Logged in as " + role);
+      let roleName = "";
+      if (role === "admin") roleName = "👨‍💼 Admin";
+      if (role === "passenger") roleName = "👤 Passenger";
+      if (role === "driver") roleName = "👨‍✈️ Driver";
+
+      alert("✅ Welcome! Logged in as " + roleName);
     }
   </script>
 
