@@ -1,279 +1,1108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Premium Multi-Panel Login</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBus - Real-time Transport Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body::before {
-      content: "";
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: conic-gradient(from 0deg, #667eea, #764ba2, #43cea2, #185a9d, #667eea);
-      animation: rotateGlow 15s linear infinite;
-      opacity: 0.25;
-      z-index: 0;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
 
-    @keyframes rotateGlow {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
 
-    .container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 25px;
-      width: 90%;
-      max-width: 1100px;
-      z-index: 1;
-      position: relative;
-    }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
 
-    .panel {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 18px;
-      box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
-      padding: 35px 25px;
-      text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
+        .login-box h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
 
-    .panel:hover {
-      transform: translateY(-10px);
-      box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.25);
-    }
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-    .panel h2 {
-      margin-bottom: 25px;
-      color: #4b0082;
-      font-size: 22px;
-    }
+        .role-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
 
-    input, textarea {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      outline: none;
-      font-size: 14px;
-    }
+        .role-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
 
-    button {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: #fff;
-      border: none;
-      padding: 12px 30px;
-      margin-top: 15px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-      transition: 0.3s;
-    }
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
 
-    button:hover {
-      background: linear-gradient(135deg, #5a67d8, #6b46c1);
-      transform: scale(1.05);
-    }
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-    .fullscreen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      color: white;
-      font-size: 18px;
-      text-align: center;
-      z-index: 10;
-      padding: 20px;
-      overflow-y: auto;
-    }
+        .login-btn:hover {
+            background: #5a67d8;
+        }
 
-    .fullscreen button {
-      margin-top: 12px;
-      padding: 12px 25px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: bold;
-    }
+        /* Main App Container */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+        }
 
-    .track-btn { background: #43cea2; color: white; }
-    .report-btn { background: #ff9800; color: white; }
-    .back-btn { background: #222; color: white; }
-    .submit-btn { background: #e63946; color: white; }
-    .delete-btn { background: #d32f2f; color: white; margin-left: 10px; }
+        /* Header */
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-    .form-box {
-      background: rgba(255, 255, 255, 0.95);
-      color: #333;
-      padding: 20px;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
-      text-align: left;
-    }
+        .header h2 {
+            font-size: 20px;
+        }
 
-    .form-box h3 {
-      text-align: center;
-      margin-bottom: 15px;
-      color: #4b0082;
-    }
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
-    .complaint-box {
-      background: white;
-      color: black;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: left;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  </style>
+        .language-selector {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Passenger View */
+        .passenger-view {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .map-container {
+            height: 400px;
+            background: #e0e0e0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .bus-info-card {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .eta-display {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .crowd-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .crowd-bar {
+            flex: 1;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .crowd-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .crowd-empty { background: #4caf50; }
+        .crowd-medium { background: #ff9800; }
+        .crowd-full { background: #f44336; }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .action-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .sos-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .complaint-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .save-route-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .view-routes-btn {
+            background: #2196f3;
+            color: white;
+        }
+
+        /* Driver View */
+        .driver-view {
+            display: none;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .driver-dashboard {
+            padding: 20px;
+        }
+
+        .driver-map {
+            height: 300px;
+            background: #333;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .driver-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .driver-info-card {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .driver-info-card h3 {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .driver-info-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .traffic-light {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .traffic-green { background: #4caf50; }
+        .traffic-yellow { background: #ffeb3b; color: #333; }
+        .traffic-red { background: #f44336; }
+
+        .driver-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .driver-action-btn {
+            padding: 25px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-accident-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .road-issue-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .end-trip-btn {
+            background: #4caf50;
+            color: white;
+            grid-column: span 2;
+        }
+
+        /* Admin View */
+        .admin-view {
+            display: none;
+            padding-bottom: 80px;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .admin-map {
+            height: 300px;
+            background: #e0e0e0;
+            margin: 20px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .complaint-list {
+            margin: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .complaint-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .complaint-item:last-child {
+            border-bottom: none;
+        }
+
+        .complaint-type {
+            font-weight: bold;
+            color: #f44336;
+        }
+
+        .complaint-bus {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            max-width: 300px;
+            z-index: 2000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .notification-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .driver-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .driver-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hidden by default */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container">
-    <div class="panel">
-      <h2>Passenger Login</h2>
-      <input type="text" id="pUser" placeholder="Enter Username">
-      <input type="password" id="pPass" placeholder="Enter Password">
-      <button onclick="openPassenger()">Login</button>
-    </div>
-
-    <div class="panel">
-      <h2>Driver Login</h2>
-      <input type="text" id="dUser" placeholder="Enter Driver ID">
-      <input type="password" id="dPass" placeholder="Enter Password">
-      <button onclick="openDriver()">Login</button>
-    </div>
-
-    <div class="panel">
-      <h2>Admin Login</h2>
-      <input type="text" id="aUser" placeholder="Enter Admin ID">
-      <input type="password" id="aPass" placeholder="Enter Password">
-      <button onclick="openAdmin()">Login</button>
-    </div>
-  </div>
-
-  <div id="output"></div>
-
-  <script>
-    let complaints = []; // store complaints
-
-    function openPassenger() {
-      document.getElementById("output").innerHTML = `
-        <div class="fullscreen">
-          <h2>🚍 Passenger Dashboard</h2>
-          <p>Welcome! Choose an option below:</p>
-          <button class="track-btn" onclick="alert('Bus tracking coming soon!')">Track Your Bus</button>
-          <button class="report-btn" onclick="openReportForm()">Report Driver</button>
-          <button class="back-btn" onclick="closePage()">⬅ Back</button>
-        </div>`;
-    }
-
-    function openReportForm() {
-      document.getElementById("output").innerHTML = `
-        <div class="fullscreen">
-          <div class="form-box">
-            <h3>📝 Report Driver</h3>
-            <label>Driver Name:</label>
-            <input type="text" id="driverName" placeholder="Enter Driver Name">
-            <label>Bus Number:</label>
-            <input type="text" id="busNo" placeholder="Enter Bus Number">
-            <label>Complaint:</label>
-            <textarea id="complaint" rows="4" placeholder="Write your complaint here..."></textarea>
-            <button class="submit-btn" onclick="submitReport()">Submit Report</button>
-            <button class="back-btn" onclick="openPassenger()">⬅ Back</button>
-          </div>
-        </div>`;
-    }
-
-    function submitReport() {
-      let name = document.getElementById("driverName").value;
-      let bus = document.getElementById("busNo").value;
-      let complaint = document.getElementById("complaint").value;
-
-      if(name && bus && complaint) {
-        complaints.push({name, bus, complaint});
-        alert("✅ Report Submitted Successfully!");
-        openPassenger();
-      } else {
-        alert("⚠ Please fill all fields before submitting.");
-      }
-    }
-
-    function openDriver() {
-      document.getElementById("output").innerHTML = `
-        <div class="fullscreen">
-          <h2>👨‍✈ Driver Dashboard</h2>
-          <p><b>Name:</b> Ramesh Kumar</p>
-          <p><b>License No:</b> RJ14-2023-4589</p>
-          <p><b>Phone:</b> +91 9876543210</p>
-          <p><b>Aadhaar:</b> XXXX-XXXX-1234</p>
-          <p><b>Address:</b> Jaipur, Rajasthan</p>
-          <p><b>Bus Plate:</b> RJ14 AB 4590</p>
-          <button class="back-btn" onclick="closePage()">⬅ Back</button>
-        </div>`;
-    }
-
-    function openAdmin() {
-      let complaintHTML = complaints.length > 0 
-        ? complaints.map((c, index) => `
-          <div class="complaint-box">
-            <div>
-              <p><b>Driver:</b> ${c.name}</p>
-              <p><b>Bus:</b> ${c.bus}</p>
-              <p><b>Complaint:</b> ${c.complaint}</p>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <h1>SmartBus Tracker</h1>
+            <div class="role-selector">
+                <button class="role-btn active" data-role="passenger">Passenger</button>
+                <button class="role-btn" data-role="driver">Driver</button>
+                <button class="role-btn" data-role="admin">Admin</button>
             </div>
-            <button class="delete-btn" onclick="deleteComplaint(${index})">Delete</button>
-          </div>
-        `).join("")
-        : "<p>No complaints submitted yet.</p>";
+            <input type="text" class="login-input" id="username" placeholder="Username">
+            <input type="password" class="login-input" id="password" placeholder="Password">
+            <button class="login-btn" onclick="login()">Login</button>
+        </div>
+    </div>
 
-      document.getElementById("output").innerHTML = `
-        <div class="fullscreen">
-          <h2>⚙ Admin Dashboard</h2>
-          <button style="background:#e63946;color:white;">❌ Remove Driver</button>
-          <h3 style="margin-top:20px;">📋 Passenger Complaints</h3>
-          ${complaintHTML}
-          <button class="back-btn" onclick="closePage()">⬅ Back</button>
-        </div>`;
-    }
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <div class="header">
+            <h2 id="appTitle">SmartBus</h2>
+            <div class="header-controls">
+                <select class="language-selector" id="languageSelector" onchange="changeLanguage()">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="local">Local</option>
+                </select>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
 
-    function deleteComplaint(index) {
-      complaints.splice(index, 1);
-      openAdmin();
-    }
+        <!-- Passenger View -->
+        <div class="passenger-view" id="passengerView">
+            <div class="map-container">
+                <div>🗺️ Live Bus Tracking Map</div>
+            </div>
+            
+            <div class="bus-info-card">
+                <div class="eta-display" id="etaDisplay">5 min</div>
+                <div style="color: #666;">Next bus arriving at Stop #123</div>
+                
+                <div class="crowd-indicator">
+                    <span>Crowd:</span>
+                    <div class="crowd-bar">
+                        <div class="crowd-fill crowd-medium" style="width: 60%"></div>
+                    </div>
+                    <span>Medium</span>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <span style="background: #e3f2fd; color: #1976d2; padding: 5px 10px; border-radius: 15px; font-size: 14px;">
+                        Route 42A
+                    </span>
+                    <span style="background: #f3e5f5; color: #7b1fa2; padding: 5px 10px; border-radius: 15px; font-size: 14px;">
+                        Bus #4201
+                    </span>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn sos-btn" onclick="showSOSModal()">
+                    <span style="font-size: 24px;">🚨</span>
+                    <span>SOS Alert</span>
+                </button>
+                <button class="action-btn complaint-btn" onclick="showComplaintModal()">
+                    <span style="font-size: 24px;">📝</span>
+                    <span>Complaint</span>
+                </button>
+                <button class="action-btn save-route-btn" onclick="saveRoute()">
+                    <span style="font-size: 24px;">⭐</span>
+                    <span>Save Route</span>
+                </button>
+                <button class="action-btn view-routes-btn" onclick="viewSavedRoutes()">
+                    <span style="font-size: 24px;">📍</span>
+                    <span>Saved Routes</span>
+                </button>
+            </div>
+        </div>
 
-    function closePage() {
-      document.getElementById("output").innerHTML = "";
-    }
-  </script>
+        <!-- Driver View -->
+        <div class="driver-view" id="driverView">
+            <div class="driver-dashboard">
+                <div class="driver-map">
+                    <div style="font-size: 18px;">📍 Driver Navigation Map</div>
+                </div>
+                
+                <div class="driver-info-grid">
+                    <div class="driver-info-card">
+                        <h3>Next Stop</h3>
+                        <div class="value">2 min</div>
+                    </div>
+                    <div class="driver-info-card">
+                        <h3>Passengers</h3>
+                        <div class="value">32</div>
+                    </div>
+                    <div class="driver-info-card">
+                        <h3>Current Speed</h3>
+                        <div class="value">35 km/h</div>
+                    </div>
+                    <div class="driver-info-card">
+                        <h3>Traffic Signal</h3>
+                        <div class="traffic-light traffic-green">45</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="driver-actions">
+                <button class="driver-action-btn report-accident-btn" onclick="reportAccident()">
+                    <span style="font-size: 32px;">🚑</span>
+                    <span>Report Accident</span>
+                </button>
+                <button class="driver-action-btn road-issue-btn" onclick="reportRoadIssue()">
+                    <span style="font-size: 32px;">🚧</span>
+                    <span>Road Issue</span>
+                </button>
+                <button class="driver-action-btn end-trip-btn" onclick="endTrip()">
+                    <span style="font-size: 32px;">🏁</span>
+                    <span>End Trip</span>
+                </button>
+            </div>
+        </div>
 
+        <!-- Admin View -->
+        <div class="admin-view" id="adminView">
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3>Active Buses</h3>
+                    <div class="value">24</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Passengers</h3>
+                    <div class="value">1,248</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Delay Reports</h3>
+                    <div class="value">3</div>
+                </div>
+                <div class="stat-card">
+                    <h3>SOS Alerts</h3>
+                    <div class="value">1</div>
+                </div>
+            </div>
+            
+            <div class="admin-map">
+                <div>📊 Real-time Bus Fleet Map</div>
+            </div>
+            
+            <div class="complaint-list">
+                <h3 style="margin-bottom: 20px;">Recent Alerts & Complaints</h3>
+                <div class="complaint-item">
+                    <div>
+                        <div class="complaint-type">SOS Alert</div>
+                        <div class="complaint-bus">Bus #4201 - Route 42A</div>
+                    </div>
+                    <div style="color: #f44336; font-weight: bold;">2 min ago</div>
+                </div>
+                <div class="complaint-item">
+                    <div>
+                        <div class="complaint-type">Complaint</div>
+                        <div class="complaint-bus">Bus #4102 - Route 15B</div>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">15 min ago</div>
+                </div>
+                <div class="complaint-item">
+                    <div>
+                        <div class="complaint-type">Delay Report</div>
+                        <div class="complaint-bus">Bus #4305 - Route 23C</div>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">25 min ago</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showView('home')">
+                <div style="font-size: 24px;">🏠</div>
+                <div>Home</div>
+            </button>
+            <button class="nav-item" onclick="showView('map')">
+                <div style="font-size: 24px;">🗺️</div>
+                <div>Map</div>
+            </button>
+            <button class="nav-item" onclick="showView('alerts')">
+                <div style="font-size: 24px;">🔔</div>
+                <div>Alerts</div>
+            </button>
+            <button class="nav-item" onclick="showView('profile')">
+                <div style="font-size: 24px;">👤</div>
+                <div>Profile</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- SOS Modal -->
+    <div class="modal" id="sosModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>SOS Emergency Alert</h3>
+                <button class="modal-close" onclick="closeModal('sosModal')">×</button>
+            </div>
+            <p style="margin: 20px 0; color: #666;">Your emergency alert will be sent to the admin with your current location and bus details.</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="login-btn" style="background: #f44336;" onclick="sendSOS()">Send SOS</button>
+                <button class="login-btn" style="background: #666;" onclick="closeModal('sosModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Modal -->
+    <div class="modal" id="complaintModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>File a Complaint</h3>
+                <button class="modal-close" onclick="closeModal('complaintModal')">×</button>
+            </div>
+            <textarea class="login-input" rows="4" placeholder="Describe your complaint..."></textarea>
+            <div class="file-upload">
+                <div style="font-size: 32px; margin-bottom: 10px;">📷</div>
+                <div>Tap to add photo or audio</div>
+            </div>
+            <button class="login-btn" onclick="submitComplaint()">Submit Complaint</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="notification-title" id="notificationTitle">Bus Alert</div>
+        <div class="notification-text" id="notificationText">Your bus is arriving in 5 minutes</div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentRole = 'passenger';
+        let currentView = 'home';
+        let userLocation = null;
+        let busLocation = { lat: 28.6139, lng: 77.2090 };
+        let etaInterval = null;
+        let notificationInterval = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Role selection
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentRole = this.dataset.role;
+                });
+            });
+
+            // Simulate bus movement and updates
+            startBusSimulation();
+        });
+
+        // Login function
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('Please enter username and password');
+                return;
+            }
+
+            // Simulate login
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            
+            // Show appropriate view based on role
+            if (currentRole === 'passenger') {
+                document.getElementById('passengerView').style.display = 'block';
+                document.getElementById('appTitle').textContent = 'Passenger Dashboard';
+                startPassengerFeatures();
+            } else if (currentRole === 'driver') {
+                document.getElementById('driverView').style.display = 'block';
+                document.getElementById('appTitle').textContent = 'Driver Dashboard';
+                startDriverFeatures();
+            } else if (currentRole === 'admin') {
+                document.getElementById('adminView').style.display = 'block';
+                document.getElementById('appTitle').textContent = 'Admin Dashboard';
+                startAdminFeatures();
+            }
+
+            showNotification('Login Successful', `Welcome ${username}!`);
+        }
+
+        // Logout function
+        function logout() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('passengerView').style.display = 'none';
+            document.getElementById('driverView').style.display = 'none';
+            document.getElementById('adminView').style.display = 'none';
+            
+            // Clear intervals
+            if (etaInterval) clearInterval(etaInterval);
+            if (notificationInterval) clearInterval(notificationInterval);
+        }
+
+        // Language change
+        function changeLanguage() {
+            const lang = document.getElementById('languageSelector').value;
+            showNotification('Language Changed', `Language set to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Local'}`);
+        }
+
+        // Passenger features
+        function startPassengerFeatures() {
+            // Update ETA every 30 seconds
+            etaInterval = setInterval(updateETA, 30000);
+            
+            // Simulate bus departure notification
+            setTimeout(() => {
+                showNotification('Bus Departure', 'Bus #4201 has left the previous stop');
+                // Vibrate if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200]);
+                }
+            }, 10000);
+
+            // Get user location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userLocation = position.coords;
+                });
+            }
+        }
+
+        // Update ETA
+        function updateETA() {
+            const etaDisplay = document.getElementById('etaDisplay');
+            const currentETA = parseInt(etaDisplay.textContent);
+            const newETA = Math.max(1, currentETA - 1);
+            etaDisplay.textContent = `${newETA} min`;
+            
+            // Update crowd randomly
+            const crowdOptions = ['Empty', 'Medium', 'Full'];
+            const crowdColors = ['crowd-empty', 'crowd-medium', 'crowd-full'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            
+            const crowdFill = document.querySelector('.crowd-fill');
+            crowdFill.className = `crowd-fill ${crowdColors[randomIndex]}`;
+            crowdFill.style.width = `${(randomIndex + 1) * 33}%`;
+            crowdFill.nextElementSibling.textContent = crowdOptions[randomIndex];
+        }
+
+        // SOS Modal
+        function showSOSModal() {
+            document.getElementById('sosModal').classList.add('show');
+        }
+
+        // Complaint Modal
+        function showComplaintModal() {
+            document.getElementById('complaintModal').classList.add('show');
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Send SOS
+        function sendSOS() {
+            closeModal('sosModal');
+            showNotification('SOS Sent', 'Emergency alert has been sent to admin');
+            
+            // Simulate SOS being received by admin
+            setTimeout(() => {
+                if (currentRole === 'admin') {
+                    showNotification('SOS Alert', 'New SOS from Bus #4201');
+                }
+            }, 2000);
+        }
+
+        // Submit complaint
+        function submitComplaint() {
+            closeModal('complaintModal');
+            showNotification('Complaint Filed', 'Your complaint has been submitted successfully');
+        }
+
+        // Save route
+        function saveRoute() {
+            showNotification('Route Saved', 'Route 42A has been saved to your favorites');
+        }
+
+        // View saved routes
+        function viewSavedRoutes() {
+            showNotification('Saved Routes', 'You have 3 saved routes');
+        }
+
+        // Driver features
+        function startDriverFeatures() {
+            // Simulate traffic light changes
+            setInterval(() => {
+                const trafficLight = document.querySelector('.traffic-light');
+                const lights = ['traffic-green', 'traffic-yellow', 'traffic-red'];
+                const timers = ['45', '5', '30'];
+                const randomIndex = Math.floor(Math.random() * 3);
+                
+                trafficLight.className = `traffic-light ${lights[randomIndex]}`;
+                trafficLight.textContent = timers[randomIndex];
+            }, 15000);
+
+            // Simulate hazard alerts
+            setTimeout(() => {
+                showNotification('Hazard Alert', 'Traffic jam reported ahead');
+                if (navigator.vibrate) {
+                    navigator.vibrate([500, 200, 500]);
+                }
+            }, 20000);
+        }
+
+        // Driver actions
+        function reportAccident() {
+            showNotification('Accident Reported', 'Admin has been notified about the accident');
+        }
+
+        function reportRoadIssue() {
+            showNotification('Road Issue Reported', 'Thank you for reporting the road issue');
+        }
+
+        function endTrip() {
+            if (confirm('Are you sure you want to end the trip?')) {
+                showNotification('Trip Ended', 'Your trip has been completed successfully');
+            }
+        }
+
+        // Admin features
+        function startAdminFeatures() {
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update stats
+                const statValues = document.querySelectorAll('.stat-card .value');
+                statValues[0].textContent = Math.floor(Math.random() * 30) + 20; // Active buses
+                statValues[1].textContent = Math.floor(Math.random() * 2000) + 1000; // Passengers
+            }, 10000);
+        }
+
+        // Bottom navigation
+        function showView(view) {
+            currentView = view;
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Handle view changes
+            if (view === 'alerts') {
+                showNotification('Alerts', 'You have 3 new alerts');
+            } else if (view === 'profile') {
+                showNotification('Profile', 'Profile feature coming soon');
+            }
+        }
+
+        // Show notification
+        function showNotification(title, text) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notificationTitle').textContent = title;
+            document.getElementById('notificationText').textContent = text;
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Bus simulation
+        function startBusSimulation() {
+            // Simulate bus movement
+            setInterval(() => {
+                busLocation.lat += (Math.random() - 0.5) * 0.001;
+                busLocation.lng += (Math.random() - 0.5) * 0.001;
+            }, 5000);
+        }
+
+        // Simulate passenger notifications
+        function simulatePassengerNotification() {
+            const notifications = [
+                { title: 'Bus Update', text: 'Bus #4201 is running 5 minutes late' },
+                { title: 'Seat Available', text: 'Window seat available on Bus #4201' },
+                { title: 'Weather Alert', text: 'Heavy rain expected, plan accordingly' },
+                { title: 'Route Change', text: 'Temporary route change due to construction' }
+            ];
+            
+            const random = notifications[Math.floor(Math.random() * notifications.length)];
+            showNotification(random.title, random.text);
+        }
+
+        // Simulate admin alerts
+        function simulateAdminAlert() {
+            if (currentRole === 'admin') {
+                const alerts = [
+                    { title: 'SOS Alert', text: 'New SOS from Bus #4102' },
+                    { title: 'Overcrowding', text: 'Bus #4305 is overcrowded' },
+                    { title: 'Breakdown', text: 'Bus #4201 reported breakdown' }
+                ];
+                
+                const random = alerts[Math.floor(Math.random() * alerts.length)];
+                showNotification(random.title, random.text);
+            }
+        }
+
+        // Start random notifications
+        setInterval(() => {
+            if (currentRole === 'passenger') {
+                simulatePassengerNotification();
+            } else if (currentRole === 'admin') {
+                simulateAdminAlert();
+            }
+        }, 30000);
+
+        // Handle app visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // App is in background
+                console.log('App in background');
+            } else {
+                // App is active
+                console.log('App active');
+            }
+        });
+    </script>
 </body>
 </html>
