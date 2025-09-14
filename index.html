@@ -143,6 +143,41 @@
             cursor: pointer;
         }
 
+        /* Location Display */
+        .location-display {
+            background: #f8f9ff;
+            padding: 15px;
+            margin: 10px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .location-coords {
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .location-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .location-active {
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .location-inactive {
+            background: #f44336;
+        }
+
         /* Passenger View */
         .passenger-view {
             display: none;
@@ -159,6 +194,29 @@
             justify-content: center;
             font-size: 18px;
             color: #666;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
         }
 
         .bus-info-card {
@@ -199,6 +257,37 @@
         .crowd-empty { background: #4caf50; }
         .crowd-medium { background: #ff9800; }
         .crowd-full { background: #f44336; }
+
+        .nearby-stops {
+            margin: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .stop-item:hover {
+            background: #f8f9ff;
+        }
+
+        .stop-item:last-child {
+            border-bottom: none;
+        }
+
+        .stop-distance {
+            color: #667eea;
+            font-weight: bold;
+        }
 
         .action-buttons {
             display: grid;
@@ -267,6 +356,29 @@
             justify-content: center;
             font-size: 24px;
             color: #666;
+            position: relative;
+        }
+
+        .driver-location-info {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .route-progress {
+            background: #333;
+            height: 8px;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .route-progress-fill {
+            height: 100%;
+            background: #667eea;
+            width: 35%;
+            transition: width 0.3s;
         }
 
         .driver-info-grid {
@@ -391,6 +503,34 @@
             justify-content: center;
             font-size: 18px;
             color: #666;
+            position: relative;
+        }
+
+        .bus-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         .complaint-list {
@@ -421,6 +561,12 @@
         .complaint-bus {
             color: #666;
             font-size: 14px;
+        }
+
+        .complaint-location {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
         }
 
         /* Bottom Navigation */
@@ -542,6 +688,93 @@
             background: #f8f9ff;
         }
 
+        /* Location sharing toggle */
+        .location-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #ccc;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(25px);
+        }
+
+        /* Live Map Styles */
+        .live-map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(45deg, #e3f2fd 25%, transparent 25%), 
+                        linear-gradient(-45deg, #e3f2fd 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #e3f2fd 75%), 
+                        linear-gradient(-45deg, transparent 75%, #e3f2fd 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+
+        .location-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: 3px solid white;
+        }
+
+        .user-marker {
+            background: #667eea;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 0 3px #667eea, 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .bus-marker {
+            background: #4caf50;
+            animation: bounce 2s infinite;
+            box-shadow: 0 0 0 3px #4caf50, 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .accuracy-circle {
+            position: absolute;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.1);
+            pointer-events: none;
+            z-index: 50;
+        }
+
         /* Responsive */
         @media (max-width: 480px) {
             .action-buttons {
@@ -554,6 +787,10 @@
             
             .driver-info-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
@@ -571,6 +808,17 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Hidden by default */
@@ -612,10 +860,31 @@
 
         <!-- Passenger View -->
         <div class="passenger-view" id="passengerView">
-            <div class="map-container">
-                <div>🗺️ Live Bus Tracking Map</div>
+            <!-- Location Display -->
+            <div class="location-display">
+                <div>
+                    <span class="location-status location-active" id="locationStatus"></span>
+                    <span id="locationText">Getting your location...</span>
+                </div>
+                <div class="location-coords" id="locationCoords"></div>
+                <div class="location-toggle">
+                    <span>Share Location</span>
+                    <div class="toggle-switch active" id="locationToggle" onclick="toggleLocationSharing()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Map -->
+            <div class="map-container" id="passengerMap">
+                <div class="map-controls">
+                    <button class="map-btn" onclick="centerOnLocation()" title="Center on my location">📍</button>
+                    <button class="map-btn" onclick="zoomIn()" title="Zoom in">+</button>
+                    <button class="map-btn" onclick="zoomOut()" title="Zoom out">-</button>
+                </div>
             </div>
             
+            <!-- Bus Info Card -->
             <div class="bus-info-card">
                 <div class="eta-display" id="etaDisplay">5 min</div>
                 <div style="color: #666;">Next bus arriving at Stop #123</div>
@@ -637,7 +906,36 @@
                     </span>
                 </div>
             </div>
+
+            <!-- Nearby Stops -->
+            <div class="nearby-stops">
+                <h3 style="margin-bottom: 15px;">Nearby Bus Stops</h3>
+                <div id="nearbyStopsList">
+                    <div class="stop-item" onclick="selectStop(this)">
+                        <div>
+                            <div style="font-weight: bold;">Central Park Stop</div>
+                            <div style="font-size: 12px; color: #666;">Routes: 42A, 15B, 23C</div>
+                        </div>
+                        <div class="stop-distance">0.5 km</div>
+                    </div>
+                    <div class="stop-item" onclick="selectStop(this)">
+                        <div>
+                            <div style="font-weight: bold;">Mall Entrance</div>
+                            <div style="font-size: 12px; color: #666;">Routes: 42A, 30X</div>
+                        </div>
+                        <div class="stop-distance">0.8 km</div>
+                    </div>
+                    <div class="stop-item" onclick="selectStop(this)">
+                        <div>
+                            <div style="font-weight: bold;">City Hospital</div>
+                            <div style="font-size: 12px; color: #666;">Routes: 15B, 45D</div>
+                        </div>
+                        <div class="stop-distance">1.2 km</div>
+                    </div>
+                </div>
+            </div>
             
+            <!-- Action Buttons -->
             <div class="action-buttons">
                 <button class="action-btn sos-btn" onclick="showSOSModal()">
                     <span style="font-size: 24px;">🚨</span>
@@ -660,31 +958,57 @@
 
         <!-- Driver View -->
         <div class="driver-view" id="driverView">
-            <div class="driver-dashboard">
-                <div class="driver-map">
-                    <div style="font-size: 18px;">📍 Driver Navigation Map</div>
+            <!-- Driver Location Info -->
+            <div class="driver-location-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; color: #888;">Current Location</div>
+                        <div id="driverLocationText">Updating...</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 14px; color: #888;">Bus #4201</div>
+                        <div style="color: #667eea;">Route 42A</div>
+                    </div>
                 </div>
-                
-                <div class="driver-info-grid">
-                    <div class="driver-info-card">
-                        <h3>Next Stop</h3>
-                        <div class="value">2 min</div>
-                    </div>
-                    <div class="driver-info-card">
-                        <h3>Passengers</h3>
-                        <div class="value">32</div>
-                    </div>
-                    <div class="driver-info-card">
-                        <h3>Current Speed</h3>
-                        <div class="value">35 km/h</div>
-                    </div>
-                    <div class="driver-info-card">
-                        <h3>Traffic Signal</h3>
-                        <div class="traffic-light traffic-green">45</div>
-                    </div>
+                <div class="route-progress">
+                    <div class="route-progress-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #888;">
+                    <span>Stop 5 of 15</span>
+                    <span>Next: Central Park</span>
+                </div>
+            </div>
+
+            <!-- Driver Map -->
+            <div class="driver-map" id="driverMap">
+                <div class="map-controls">
+                    <button class="map-btn" onclick="centerOnLocation()" title="Center on bus location">📍</button>
+                    <button class="map-btn" onclick="zoomIn()" title="Zoom in">+</button>
+                    <button class="map-btn" onclick="zoomOut()" title="Zoom out">-</button>
                 </div>
             </div>
             
+            <!-- Driver Info Grid -->
+            <div class="driver-info-grid">
+                <div class="driver-info-card">
+                    <h3>Next Stop</h3>
+                    <div class="value">2 min</div>
+                </div>
+                <div class="driver-info-card">
+                    <h3>Passengers</h3>
+                    <div class="value">32</div>
+                </div>
+                <div class="driver-info-card">
+                    <h3>Current Speed</h3>
+                    <div class="value">35 km/h</div>
+                </div>
+                <div class="driver-info-card">
+                    <h3>Traffic Signal</h3>
+                    <div class="traffic-light traffic-green">45</div>
+                </div>
+            </div>
+            
+            <!-- Driver Actions -->
             <div class="driver-actions">
                 <button class="driver-action-btn report-accident-btn" onclick="reportAccident()">
                     <span style="font-size: 32px;">🚑</span>
@@ -703,6 +1027,7 @@
 
         <!-- Admin View -->
         <div class="admin-view" id="adminView">
+            <!-- Admin Stats -->
             <div class="admin-stats">
                 <div class="stat-card">
                     <h3>Active Buses</h3>
@@ -722,16 +1047,23 @@
                 </div>
             </div>
             
-            <div class="admin-map">
+            <!-- Fleet Map -->
+            <div class="admin-map" id="adminMap">
                 <div>📊 Real-time Bus Fleet Map</div>
+                <div class="bus-marker" style="top: 30%; left: 20%;">4201</div>
+                <div class="bus-marker" style="top: 60%; left: 70%;">4102</div>
+                <div class="bus-marker" style="top: 45%; left: 50%;">4305</div>
+                <div class="bus-marker" style="top: 20%; left: 80%;">4401</div>
             </div>
             
+            <!-- Complaint List -->
             <div class="complaint-list">
                 <h3 style="margin-bottom: 20px;">Recent Alerts & Complaints</h3>
                 <div class="complaint-item">
                     <div>
                         <div class="complaint-type">SOS Alert</div>
                         <div class="complaint-bus">Bus #4201 - Route 42A</div>
+                        <div class="complaint-location">📍 Central Park Stop (28.6139, 77.2090)</div>
                     </div>
                     <div style="color: #f44336; font-weight: bold;">2 min ago</div>
                 </div>
@@ -739,6 +1071,7 @@
                     <div>
                         <div class="complaint-type">Complaint</div>
                         <div class="complaint-bus">Bus #4102 - Route 15B</div>
+                        <div class="complaint-location">📍 Mall Entrance (28.6150, 77.2080)</div>
                     </div>
                     <div style="color: #666; font-size: 14px;">15 min ago</div>
                 </div>
@@ -746,6 +1079,7 @@
                     <div>
                         <div class="complaint-type">Delay Report</div>
                         <div class="complaint-bus">Bus #4305 - Route 23C</div>
+                        <div class="complaint-location">📍 City Hospital (28.6120, 77.2100)</div>
                     </div>
                     <div style="color: #666; font-size: 14px;">25 min ago</div>
                 </div>
@@ -780,7 +1114,12 @@
                 <h3>SOS Emergency Alert</h3>
                 <button class="modal-close" onclick="closeModal('sosModal')">×</button>
             </div>
-            <p style="margin: 20px 0; color: #666;">Your emergency alert will be sent to the admin with your current location and bus details.</p>
+            <p style="margin: 20px 0; color: #666;">
+                Your emergency alert will be sent to the admin with your current location:
+            </p>
+            <div style="background: #f8f9ff; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div id="sosLocation">Getting location...</div>
+            </div>
             <div style="display: flex; gap: 10px;">
                 <button class="login-btn" style="background: #f44336;" onclick="sendSOS()">Send SOS</button>
                 <button class="login-btn" style="background: #666;" onclick="closeModal('sosModal')">Cancel</button>
@@ -800,6 +1139,10 @@
                 <div style="font-size: 32px; margin-bottom: 10px;">📷</div>
                 <div>Tap to add photo or audio</div>
             </div>
+            <div style="background: #f8f9ff; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #666;">Location will be attached automatically</div>
+                <div id="complaintLocation" style="font-size: 12px; color: #888;">Getting location...</div>
+            </div>
             <button class="login-btn" onclick="submitComplaint()">Submit Complaint</button>
         </div>
     </div>
@@ -811,30 +1154,680 @@
     </div>
 
     <script>
-        // Global variables
+        // ===== LIVE LOCATION TRACKING SYSTEM =====
+        class LiveLocationTracker {
+            constructor() {
+                this.watchId = null;
+                this.currentPosition = null;
+                this.previousPosition = null;
+                this.map = null;
+                this.userMarker = null;
+                this.busMarkers = new Map();
+                this.routePolyline = null;
+                this.isTracking = false;
+                this.updateInterval = 3000;
+                this.role = 'passenger';
+                this.busLocation = { lat: 28.6139, lng: 77.2090 };
+            }
+
+            init(role) {
+                this.role = role;
+                this.setupMap();
+                this.startLocationTracking();
+                this.simulateBusTracking();
+            }
+
+            setupMap() {
+                const mapContainers = {
+                    passenger: 'passengerMap',
+                    driver: 'driverMap',
+                    admin: 'adminMap'
+                };
+
+                const containerId = mapContainers[this.role];
+                if (containerId) {
+                    const container = document.getElementById(containerId);
+                    if (container && !container.querySelector('.live-map')) {
+                        const mapElement = document.createElement('div');
+                        mapElement.className = 'live-map';
+                        
+                        const gridOverlay = document.createElement('div');
+                        gridOverlay.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-image: 
+                                linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                                linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+                            background-size: 50px 50px;
+                        `;
+                        mapElement.appendChild(gridOverlay);
+                        
+                        this.addRoadsToMap(mapElement);
+                        container.appendChild(mapElement);
+                    }
+                }
+            }
+
+            addRoadsToMap(mapElement) {
+                const roads = [
+                    { x: 10, y: 50, width: 80, height: 4, color: '#666' },
+                    { x: 50, y: 10, width: 4, height: 80, color: '#666' },
+                    { x: 20, y: 20, width: 60, height: 3, color: '#999', angle: 45 },
+                    { x: 20, y: 70, width: 60, height: 3, color: '#999', angle: -45 }
+                ];
+
+                roads.forEach(road => {
+                    const roadElement = document.createElement('div');
+                    roadElement.style.cssText = `
+                        position: absolute;
+                        left: ${road.x}%;
+                        top: ${road.y}%;
+                        width: ${road.width}%;
+                        height: ${road.height}%;
+                        background: ${road.color};
+                        ${road.angle ? `transform: rotate(${road.angle}deg);` : ''}
+                        border-radius: 2px;
+                    `;
+                    mapElement.appendChild(roadElement);
+                });
+            }
+
+            startLocationTracking() {
+                if (navigator.geolocation) {
+                    this.isTracking = true;
+                    
+                    this.watchId = navigator.geolocation.watchPosition(
+                        (position) => {
+                            this.previousPosition = this.currentPosition;
+                            this.currentPosition = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                                accuracy: position.coords.accuracy,
+                                timestamp: position.timestamp
+                            };
+                            
+                            this.updateLocationDisplay();
+                            this.updateMap();
+                            this.calculateSpeed();
+                            this.detectMovement();
+                            this.updateRoleSpecificFeatures();
+                        },
+                        (error) => {
+                            this.handleLocationError(error);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+
+                    this.startBackgroundTracking();
+                } else {
+                    this.showError('Geolocation is not supported by this browser');
+                }
+            }
+
+            startBackgroundTracking() {
+                setInterval(() => {
+                    if (this.isTracking && this.currentPosition) {
+                        this.simulateLocationUpdate();
+                    }
+                }, this.updateInterval);
+            }
+
+            simulateLocationUpdate() {
+                if (this.currentPosition) {
+                    const noise = 0.0001;
+                    this.currentPosition.lat += (Math.random() - 0.5) * noise;
+                    this.currentPosition.lng += (Math.random() - 0.5) * noise;
+                    
+                    this.updateMap();
+                    this.updateLocationDisplay();
+                }
+            }
+
+            updateLocationDisplay() {
+                if (!this.currentPosition) return;
+
+                const coordElements = {
+                    passenger: document.getElementById('locationCoords'),
+                    driver: document.getElementById('driverLocationText')
+                };
+
+                const coordElement = coordElements[this.role];
+                if (coordElement) {
+                    coordElement.textContent = `Lat: ${this.currentPosition.lat.toFixed(6)}, Lng: ${this.currentPosition.lng.toFixed(6)}`;
+                }
+
+                const sosLocation = document.getElementById('sosLocation');
+                if (sosLocation) {
+                    sosLocation.textContent = `Lat: ${this.currentPosition.lat.toFixed(6)}, Lng: ${this.currentPosition.lng.toFixed(6)}`;
+                }
+
+                const complaintLocation = document.getElementById('complaintLocation');
+                if (complaintLocation) {
+                    complaintLocation.textContent = `Lat: ${this.currentPosition.lat.toFixed(6)}, Lng: ${this.currentPosition.lng.toFixed(6)}`;
+                }
+            }
+
+            updateMap() {
+                if (!this.currentPosition) return;
+
+                const mapElement = document.querySelector('.live-map');
+                if (!mapElement) return;
+
+                if (!this.userMarker) {
+                    this.userMarker = this.createMarker('user', this.currentPosition, '📍');
+                    mapElement.appendChild(this.userMarker);
+                } else {
+                    this.updateMarkerPosition(this.userMarker, this.currentPosition);
+                }
+
+                this.updateAccuracyCircle();
+            }
+
+            createMarker(type, position, icon) {
+                const marker = document.createElement('div');
+                marker.className = `location-marker ${type}-marker`;
+                marker.innerHTML = icon;
+                marker.style.cssText = `
+                    position: absolute;
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 24px;
+                    background: ${type === 'user' ? '#667eea' : type === 'bus' ? '#4caf50' : '#ff9800'};
+                    border-radius: 50%;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    z-index: 100;
+                    border: 3px solid white;
+                    animation: ${type === 'bus' ? 'bounce 2s infinite' : 'pulse 2s infinite'};
+                `;
+
+                marker.addEventListener('click', () => {
+                    this.showMarkerDetails(type, position);
+                });
+
+                this.updateMarkerPosition(marker, position);
+                return marker;
+            }
+
+            updateMarkerPosition(marker, position) {
+                const x = this.lngToX(position.lng);
+                const y = this.latToY(position.lat);
+                
+                marker.style.left = `${x}%`;
+                marker.style.top = `${y}%`;
+            }
+
+            lngToX(lng) {
+                const centerLng = 77.2090;
+                const scale = 0.1;
+                return 50 + (lng - centerLng) * scale * 100;
+            }
+
+            latToY(lat) {
+                const centerLat = 28.6139;
+                const scale = 0.1;
+                return 50 - (lat - centerLat) * scale * 100;
+            }
+
+            showMarkerDetails(type, position) {
+                const details = {
+                    user: `Your Location\nLat: ${position.lat.toFixed(6)}\nLng: ${position.lng.toFixed(6)}\nAccuracy: ${position.accuracy || 'N/A'}m`,
+                    bus: `Bus Location\nLat: ${position.lat.toFixed(6)}\nLng: ${position.lng.toFixed(6)}\nSpeed: ${position.speed || 'N/A'} km/h`
+                };
+
+                showNotification('Location Details', details[type] || 'Unknown location');
+            }
+
+            updateAccuracyCircle() {
+                if (!this.currentPosition?.accuracy) return;
+
+                let accuracyCircle = document.querySelector('.accuracy-circle');
+                if (!accuracyCircle) {
+                    accuracyCircle = document.createElement('div');
+                    accuracyCircle.className = 'accuracy-circle';
+                    document.querySelector('.live-map').appendChild(accuracyCircle);
+                }
+
+                const accuracy = this.currentPosition.accuracy;
+                const size = Math.max(20, accuracy * 0.1);
+                const x = this.lngToX(this.currentPosition.lng);
+                const y = this.latToY(this.currentPosition.lat);
+
+                accuracyCircle.style.left = `${x}%`;
+                accuracyCircle.style.top = `${y}%`;
+                accuracyCircle.style.width = `${size}px`;
+                accuracyCircle.style.height = `${size}px`;
+                accuracyCircle.style.transform = 'translate(-50%, -50%)';
+            }
+
+            calculateDistance(lat1, lng1, lat2, lng2) {
+                const R = 6371000;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            detectMovement() {
+                if (!this.previousPosition || !this.currentPosition) return;
+
+                const distance = this.calculateDistance(
+                    this.previousPosition.lat,
+                    this.previousPosition.lng,
+                    this.currentPosition.lat,
+                    this.currentPosition.lng
+                );
+
+                if (distance > 10) {
+                    this.onMovementDetected(distance);
+                }
+            }
+
+            onMovementDetected(distance) {
+                const statusElement = document.getElementById('locationText');
+                if (statusElement) {
+                    statusElement.textContent = `Moving (${distance.toFixed(0)}m)`;
+                }
+
+                if (this.role === 'passenger') {
+                    this.updateNearbyStops();
+                } else if (this.role === 'driver') {
+                    this.updateRouteProgress();
+                }
+
+                if (distance > 50 && navigator.vibrate) {
+                    navigator.vibrate(100);
+                }
+            }
+
+            updateNearbyStops() {
+                if (!this.currentPosition) return;
+
+                const stops = [
+                    { name: 'Central Park Stop', lat: 28.6139, lng: 77.2090, routes: ['42A', '15B', '23C'] },
+                    { name: 'Mall Entrance', lat: 28.6150, lng: 77.2080, routes: ['42A', '30X'] },
+                    { name: 'City Hospital', lat: 28.6120, lng: 77.2100, routes: ['15B', '45D'] }
+                ];
+
+                stops.forEach(stop => {
+                    stop.distance = this.calculateDistance(
+                        this.currentPosition.lat,
+                        this.currentPosition.lng,
+                        stop.lat,
+                        stop.lng
+                    ) / 1000;
+                });
+
+                this.displayNearbyStops(stops);
+            }
+
+            displayNearbyStops(stops) {
+                const stopsList = document.getElementById('nearbyStopsList');
+                if (!stopsList) return;
+
+                stops.sort((a, b) => a.distance - b.distance);
+                
+                stopsList.innerHTML = stops.map(stop => `
+                    <div class="stop-item" onclick="selectStop(this)" data-lat="${stop.lat}" data-lng="${stop.lng}">
+                        <div>
+                            <div style="font-weight: bold;">${stop.name}</div>
+                            <div style="font-size: 12px; color: #666;">Routes: ${stop.routes.join(', ')}</div>
+                        </div>
+                        <div class="stop-distance">${stop.distance.toFixed(1)} km</div>
+                    </div>
+                `).join('');
+            }
+
+            simulateBusTracking() {
+                const busData = [
+                    { id: '4201', lat: 28.6139, lng: 77.2090, route: '42A' },
+                    { id: '4102', lat: 28.6150, lng: 77.2080, route: '15B' },
+                    { id: '4305', lat: 28.6120, lng: 77.2100, route: '23C' },
+                    { id: '4401', lat: 28.6140, lng: 77.2070, route: '30X' }
+                ];
+
+                busData.forEach(bus => {
+                    this.createBusMarker(bus);
+                });
+
+                setInterval(() => {
+                    busData.forEach(bus => {
+                        bus.lat += (Math.random() - 0.5) * 0.0005;
+                        bus.lng += (Math.random() - 0.5) * 0.0005;
+                        this.updateBusMarker(bus);
+                    });
+                }, 5000);
+            }
+
+            createBusMarker(busData) {
+                const mapElement = document.querySelector('.live-map');
+                if (!mapElement) return;
+
+                const marker = this.createMarker('bus', busData, '🚌');
+                marker.setAttribute('data-bus-id', busData.id);
+                marker.setAttribute('data-route', busData.route);
+                
+                const busId = document.createElement('div');
+                busId.style.cssText = `
+                    position: absolute;
+                    top: -5px;
+                    right: -5px;
+                    background: #333;
+                    color: white;
+                    font-size: 10px;
+                    padding: 2px 5px;
+                    border-radius: 3px;
+                    font-weight: bold;
+                `;
+                busId.textContent = busData.id;
+                marker.appendChild(busId);
+
+                mapElement.appendChild(marker);
+                this.busMarkers.set(busData.id, marker);
+            }
+
+            updateBusMarker(busData) {
+                const marker = this.busMarkers.get(busData.id);
+                if (marker) {
+                    this.updateMarkerPosition(marker, busData);
+                }
+            }
+
+            updateRoleSpecificFeatures() {
+                switch(this.role) {
+                    case 'passenger':
+                        this.updatePassengerFeatures();
+                        break;
+                    case 'driver':
+                        this.updateDriverFeatures();
+                        break;
+                    case 'admin':
+                        this.updateAdminFeatures();
+                        break;
+                }
+            }
+
+            updatePassengerFeatures() {
+                this.updateETA();
+                this.checkNearbyBuses();
+                this.updateWalkingDirections();
+            }
+
+            updateDriverFeatures() {
+                this.updateRouteProgress();
+                this.checkTrafficConditions();
+                this.updateNextStopETA();
+            }
+
+            updateAdminFeatures() {
+                this.updateFleetPositions();
+                this.monitorBusSpeeds();
+                this.updateHeatmap();
+            }
+
+            updateETA() {
+                if (!this.currentPosition) return;
+
+                const etaDisplay = document.getElementById('etaDisplay');
+                if (etaDisplay) {
+                    const currentETA = parseInt(etaDisplay.textContent);
+                    const newETA = Math.max(1, currentETA - 1);
+                    etaDisplay.textContent = `${newETA} min`;
+                }
+            }
+
+            checkNearbyBuses() {
+                const buses = Array.from(this.busMarkers.values());
+                buses.forEach(bus => {
+                    const busLat = parseFloat(bus.style.left) / 100 * 0.1 + 28.6139;
+                    const busLng = parseFloat(bus.style.top) / 100 * 0.1 + 77.2090;
+                    
+                    const distance = this.calculateDistance(
+                        this.currentPosition.lat,
+                        this.currentPosition.lng,
+                        busLat,
+                        busLng
+                    );
+                    
+                    if (distance < 200) {
+                        const busId = bus.getAttribute('data-bus-id');
+                        showNotification('Bus Nearby', `Bus ${busId} is very close!`);
+                    }
+                });
+            }
+
+            updateWalkingDirections() {
+                if (!this.currentPosition) return;
+                
+                const nearestStop = this.findNearestStop();
+                if (nearestStop) {
+                    const distance = this.calculateDistance(
+                        this.currentPosition.lat,
+                        this.currentPosition.lng,
+                        nearestStop.lat,
+                        nearestStop.lng
+                    );
+                    
+                    const walkingTime = Math.round((distance / 1000) / 5 * 60);
+                    
+                    const walkingElement = document.getElementById('walkingTime');
+                    if (walkingElement) {
+                        walkingElement.textContent = `${walkingTime} min walk`;
+                    }
+                }
+            }
+
+            findNearestStop() {
+                const stops = [
+                    { name: 'Central Park Stop', lat: 28.6139, lng: 77.2090 },
+                    { name: 'Mall Entrance', lat: 28.6150, lng: 77.2080 },
+                    { name: 'City Hospital', lat: 28.6120, lng: 77.2100 }
+                ];
+                
+                let nearest = null;
+                let minDistance = Infinity;
+                
+                stops.forEach(stop => {
+                    const distance = this.calculateDistance(
+                        this.currentPosition.lat,
+                        this.currentPosition.lng,
+                        stop.lat,
+                        stop.lng
+                    );
+                    
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearest = stop;
+                    }
+                });
+                
+                return nearest;
+            }
+
+            updateRouteProgress() {
+                if (!this.currentPosition) return;
+
+                const progressBar = document.querySelector('.route-progress-fill');
+                if (progressBar) {
+                    const currentProgress = parseFloat(progressBar.style.width) || 35;
+                    const newProgress = Math.min(100, currentProgress + Math.random() * 2);
+                    progressBar.style.width = `${newProgress}%`;
+                }
+            }
+
+            checkTrafficConditions() {
+                const hour = new Date().getHours();
+                const isPeakHour = (hour >= 8 && hour <= 10) || (hour >= 17 && hour <= 19);
+                
+                const trafficLight = document.querySelector('.traffic-light');
+                if (trafficLight) {
+                    if (isPeakHour) {
+                        trafficLight.className = 'traffic-light traffic-red';
+                        trafficLight.textContent = 'Slow';
+                    } else {
+                        trafficLight.className = 'traffic-light traffic-green';
+                        trafficLight.textContent = '45';
+                    }
+                }
+            }
+
+            updateNextStopETA() {
+                if (!this.currentPosition) return;
+                
+                const nextStopDistance = 500 + Math.random() * 1000;
+                const avgSpeed = 25;
+                const etaMinutes = Math.round((nextStopDistance / 1000) / avgSpeed * 60);
+                
+                const nextStopElement = document.querySelector('.driver-info-card .value');
+                if (nextStopElement && nextStopElement.previousElementSibling.textContent === 'Next Stop') {
+                    nextStopElement.textContent = `${etaMinutes} min`;
+                }
+            }
+
+            updateFleetPositions() {
+                this.busMarkers.forEach((marker, busId) => {
+                    const currentTop = parseFloat(marker.style.top) || 50;
+                    const currentLeft = parseFloat(marker.style.left) || 50;
+                    
+                    const newTop = Math.max(10, Math.min(80, currentTop + (Math.random() - 0.5) * 5));
+                    const newLeft = Math.max(10, Math.min(80, currentLeft + (Math.random() - 0.5) * 5));
+                    
+                    marker.style.top = `${newTop}%`;
+                    marker.style.left = `${newLeft}%`;
+                });
+            }
+
+            monitorBusSpeeds() {
+                this.busMarkers.forEach((marker, busId) => {
+                    const speed = 20 + Math.random() * 40;
+                    
+                    if (speed > 50) {
+                        marker.style.background = '#f44336';
+                    } else if (speed > 30) {
+                        marker.style.background = '#ff9800';
+                    } else {
+                        marker.style.background = '#4caf50';
+                    }
+                });
+            }
+
+            updateHeatmap() {
+                const heatmapData = [];
+                for (let i = 0; i < 10; i++) {
+                    heatmapData.push({
+                        lat: 28.6139 + (Math.random() - 0.5) * 0.01,
+                        lng: 77.2090 + (Math.random() - 0.5) * 0.01,
+                        intensity: Math.random()
+                    });
+                }
+                
+                this.displayHeatmap(heatmapData);
+            }
+
+            displayHeatmap(data) {
+                const oldHeatmap = document.querySelector('.heatmap-layer');
+                if (oldHeatmap) {
+                    oldHeatmap.remove();
+                }
+                
+                const mapElement = document.querySelector('.live-map');
+                if (!mapElement) return;
+                
+                const heatmapLayer = document.createElement('div');
+                heatmapLayer.className = 'heatmap-layer';
+                heatmapLayer.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    pointer-events: none;
+                `;
+                
+                data.forEach(point => {
+                    const heatPoint = document.createElement('div');
+                    heatPoint.style.cssText = `
+                        position: absolute;
+                        left: ${this.lngToX(point.lng)}%;
+                        top: ${this.latToY(point.lat)}%;
+                        width: 30px;
+                        height: 30px;
+                        background: radial-gradient(circle, rgba(255,0,0,${point.intensity}) 0%, transparent 70%);
+                        border-radius: 50%;
+                        transform: translate(-50%, -50%);
+                    `;
+                    heatmapLayer.appendChild(heatPoint);
+                });
+                
+                mapElement.appendChild(heatmapLayer);
+            }
+
+            calculateSpeed() {
+                if (!this.previousPosition || !this.currentPosition) return;
+
+                const timeDiff = this.currentPosition.timestamp - this.previousPosition.timestamp;
+                const distance = this.calculateDistance(
+                    this.previousPosition.lat,
+                    this.previousPosition.lng,
+                    this.currentPosition.lat,
+                    this.currentPosition.lng
+                );
+
+                if (timeDiff > 0) {
+                    const speed = (distance / (timeDiff / 1000)) * 3.6;
+                    this.currentPosition.speed = speed;
+                    
+                    if (this.role === 'driver') {
+                        const speedElement = document.querySelector('.driver-info-card .value');
+                        if (speedElement && speedElement.previousElementSibling.textContent === 'Current Speed') {
+                            speedElement.textContent = `${Math.round(speed)} km/h`;
+                        }
+                    }
+                }
+            }
+
+            handleLocationError(error) {
+                let message = '';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = 'Location access denied by user';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = 'Location information unavailable';
+                        break;
+                    case error.TIMEOUT:
+                        message = 'Location request timed out';
+                        break;
+                    default:
+                        message = 'Unknown location error';
+                }
+                
+                showNotification('Location Error', message);
+            }
+        }
+
+        // ===== GLOBAL VARIABLES =====
         let currentRole = 'passenger';
         let currentView = 'home';
-        let userLocation = null;
-        let busLocation = { lat: 28.6139, lng: 77.2090 };
+        let locationTracker = null;
         let etaInterval = null;
         let notificationInterval = null;
 
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            // Role selection
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentRole = this.dataset.role;
-                });
-            });
-
-            // Simulate bus movement and updates
-            startBusSimulation();
-        });
-
-        // Login function
+        // ===== LOGIN & ROLE MANAGEMENT =====
         function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -844,11 +1837,9 @@
                 return;
             }
 
-            // Simulate login
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
             
-            // Show appropriate view based on role
             if (currentRole === 'passenger') {
                 document.getElementById('passengerView').style.display = 'block';
                 document.getElementById('appTitle').textContent = 'Passenger Dashboard';
@@ -864,9 +1855,13 @@
             }
 
             showNotification('Login Successful', `Welcome ${username}!`);
+            
+            // Initialize location tracking
+            setTimeout(() => {
+                initializeLocationTracking(currentRole);
+            }, 1000);
         }
 
-        // Logout function
         function logout() {
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('appContainer').style.display = 'none';
@@ -874,104 +1869,89 @@
             document.getElementById('driverView').style.display = 'none';
             document.getElementById('adminView').style.display = 'none';
             
-            // Clear intervals
             if (etaInterval) clearInterval(etaInterval);
             if (notificationInterval) clearInterval(notificationInterval);
+            if (locationTracker) {
+                locationTracker.stopTracking();
+            }
         }
 
-        // Language change
         function changeLanguage() {
             const lang = document.getElementById('languageSelector').value;
             showNotification('Language Changed', `Language set to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Local'}`);
         }
 
-        // Passenger features
-        function startPassengerFeatures() {
-            // Update ETA every 30 seconds
-            etaInterval = setInterval(updateETA, 30000);
+        // ===== LOCATION TRACKING =====
+        function initializeLocationTracking(role) {
+            if (!locationTracker) {
+                locationTracker = new LiveLocationTracker();
+            }
+            locationTracker.init(role);
+        }
+
+        function toggleLocationSharing() {
+            const toggle = document.getElementById('locationToggle');
+            const locationDisplay = document.querySelector('.location-display');
             
-            // Simulate bus departure notification
+            if (toggle.classList.contains('active')) {
+                toggle.classList.remove('active');
+                if (locationTracker) {
+                    locationTracker.stopTracking();
+                }
+                locationDisplay.style.opacity = '0.5';
+                showNotification('Location Sharing', 'Location sharing disabled');
+            } else {
+                toggle.classList.add('active');
+                if (locationTracker) {
+                    locationTracker.startLocationTracking();
+                }
+                locationDisplay.style.opacity = '1';
+                showNotification('Location Sharing', 'Location sharing enabled');
+            }
+        }
+
+        function centerOnLocation() {
+            if (locationTracker && locationTracker.getCurrentLocation()) {
+                showNotification('Map Centered', 'Map centered on your location');
+            } else {
+                showNotification('Location Error', 'Unable to get your location');
+            }
+        }
+
+        function zoomIn() {
+            showNotification('Zoom', 'Zooming in');
+        }
+
+        function zoomOut() {
+            showNotification('Zoom', 'Zooming out');
+        }
+
+        function selectStop(element) {
+            document.querySelectorAll('.stop-item').forEach(item => {
+                item.style.background = '';
+            });
+            element.style.background = '#f8f9ff';
+            
+            const stopName = element.querySelector('div > div').textContent;
+            showNotification('Stop Selected', `Selected ${stopName}`);
+        }
+
+        // ===== PASSENGER FEATURES =====
+        function startPassengerFeatures() {
+            etaInterval = setInterval(() => {
+                if (locationTracker) locationTracker.updateETA();
+            }, 30000);
+            
             setTimeout(() => {
                 showNotification('Bus Departure', 'Bus #4201 has left the previous stop');
-                // Vibrate if supported
                 if (navigator.vibrate) {
                     navigator.vibrate([200, 100, 200]);
                 }
             }, 10000);
-
-            // Get user location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    userLocation = position.coords;
-                });
-            }
         }
 
-        // Update ETA
-        function updateETA() {
-            const etaDisplay = document.getElementById('etaDisplay');
-            const currentETA = parseInt(etaDisplay.textContent);
-            const newETA = Math.max(1, currentETA - 1);
-            etaDisplay.textContent = `${newETA} min`;
-            
-            // Update crowd randomly
-            const crowdOptions = ['Empty', 'Medium', 'Full'];
-            const crowdColors = ['crowd-empty', 'crowd-medium', 'crowd-full'];
-            const randomIndex = Math.floor(Math.random() * 3);
-            
-            const crowdFill = document.querySelector('.crowd-fill');
-            crowdFill.className = `crowd-fill ${crowdColors[randomIndex]}`;
-            crowdFill.style.width = `${(randomIndex + 1) * 33}%`;
-            crowdFill.nextElementSibling.textContent = crowdOptions[randomIndex];
-        }
-
-        // SOS Modal
-        function showSOSModal() {
-            document.getElementById('sosModal').classList.add('show');
-        }
-
-        // Complaint Modal
-        function showComplaintModal() {
-            document.getElementById('complaintModal').classList.add('show');
-        }
-
-        // Close modal
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        // Send SOS
-        function sendSOS() {
-            closeModal('sosModal');
-            showNotification('SOS Sent', 'Emergency alert has been sent to admin');
-            
-            // Simulate SOS being received by admin
-            setTimeout(() => {
-                if (currentRole === 'admin') {
-                    showNotification('SOS Alert', 'New SOS from Bus #4201');
-                }
-            }, 2000);
-        }
-
-        // Submit complaint
-        function submitComplaint() {
-            closeModal('complaintModal');
-            showNotification('Complaint Filed', 'Your complaint has been submitted successfully');
-        }
-
-        // Save route
-        function saveRoute() {
-            showNotification('Route Saved', 'Route 42A has been saved to your favorites');
-        }
-
-        // View saved routes
-        function viewSavedRoutes() {
-            showNotification('Saved Routes', 'You have 3 saved routes');
-        }
-
-        // Driver features
+        // ===== DRIVER FEATURES =====
         function startDriverFeatures() {
-            // Simulate traffic light changes
             setInterval(() => {
                 const trafficLight = document.querySelector('.traffic-light');
                 const lights = ['traffic-green', 'traffic-yellow', 'traffic-red'];
@@ -982,22 +1962,71 @@
                 trafficLight.textContent = timers[randomIndex];
             }, 15000);
 
-            // Simulate hazard alerts
             setTimeout(() => {
-                showNotification('Hazard Alert', 'Traffic jam reported ahead');
+                showNotification('Hazard Alert', 'Traffic jam reported ahead at your location');
                 if (navigator.vibrate) {
                     navigator.vibrate([500, 200, 500]);
                 }
             }, 20000);
         }
 
-        // Driver actions
+        // ===== ADMIN FEATURES =====
+        function startAdminFeatures() {
+            setInterval(() => {
+                const statValues = document.querySelectorAll('.stat-card .value');
+                statValues[0].textContent = Math.floor(Math.random() * 30) + 20;
+                statValues[1].textContent = Math.floor(Math.random() * 2000) + 1000;
+            }, 10000);
+        }
+
+        // ===== MODAL FUNCTIONS =====
+        function showSOSModal() {
+            document.getElementById('sosModal').classList.add('show');
+        }
+
+        function showComplaintModal() {
+            document.getElementById('complaintModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        function sendSOS() {
+            closeModal('sosModal');
+            showNotification('SOS Sent', 'Emergency alert has been sent to admin with your location');
+            
+            setTimeout(() => {
+                if (currentRole === 'admin') {
+                    showNotification('SOS Alert', 'New SOS from Bus #4201 at your location');
+                }
+            }, 2000);
+        }
+
+        function submitComplaint() {
+            closeModal('complaintModal');
+            showNotification('Complaint Filed', 'Your complaint has been submitted successfully with location data');
+        }
+
+        // ===== ACTION FUNCTIONS =====
+        function saveRoute() {
+            showNotification('Route Saved', 'Route 42A has been saved to your favorites');
+        }
+
+        function viewSavedRoutes() {
+            showNotification('Saved Routes', 'You have 3 saved routes');
+        }
+
         function reportAccident() {
-            showNotification('Accident Reported', 'Admin has been notified about the accident');
+            const locationText = locationTracker && locationTracker.getCurrentLocation() ? 
+                `Lat: ${locationTracker.getCurrentLocation().lat.toFixed(6)}, Lng: ${locationTracker.getCurrentLocation().lng.toFixed(6)}` : 
+                'Location unavailable';
+            
+            showNotification('Accident Reported', `Admin has been notified about the accident at ${locationText}`);
         }
 
         function reportRoadIssue() {
-            showNotification('Road Issue Reported', 'Thank you for reporting the road issue');
+            showNotification('Road Issue Reported', 'Thank you for reporting the road issue with location');
         }
 
         function endTrip() {
@@ -1006,36 +2035,25 @@
             }
         }
 
-        // Admin features
-        function startAdminFeatures() {
-            // Simulate real-time updates
-            setInterval(() => {
-                // Update stats
-                const statValues = document.querySelectorAll('.stat-card .value');
-                statValues[0].textContent = Math.floor(Math.random() * 30) + 20; // Active buses
-                statValues[1].textContent = Math.floor(Math.random() * 2000) + 1000; // Passengers
-            }, 10000);
-        }
-
-        // Bottom navigation
+        // ===== NAVIGATION =====
         function showView(view) {
             currentView = view;
             
-            // Update active nav item
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             event.target.closest('.nav-item').classList.add('active');
             
-            // Handle view changes
-            if (view === 'alerts') {
+            if (view === 'map') {
+                showNotification('Map View', 'Opening map with real-time locations');
+            } else if (view === 'alerts') {
                 showNotification('Alerts', 'You have 3 new alerts');
             } else if (view === 'profile') {
                 showNotification('Profile', 'Profile feature coming soon');
             }
         }
 
-        // Show notification
+        // ===== NOTIFICATIONS =====
         function showNotification(title, text) {
             const notification = document.getElementById('notification');
             document.getElementById('notificationTitle').textContent = title;
@@ -1048,60 +2066,16 @@
             }, 3000);
         }
 
-        // Bus simulation
-        function startBusSimulation() {
-            // Simulate bus movement
-            setInterval(() => {
-                busLocation.lat += (Math.random() - 0.5) * 0.001;
-                busLocation.lng += (Math.random() - 0.5) * 0.001;
-            }, 5000);
-        }
-
-        // Simulate passenger notifications
-        function simulatePassengerNotification() {
-            const notifications = [
-                { title: 'Bus Update', text: 'Bus #4201 is running 5 minutes late' },
-                { title: 'Seat Available', text: 'Window seat available on Bus #4201' },
-                { title: 'Weather Alert', text: 'Heavy rain expected, plan accordingly' },
-                { title: 'Route Change', text: 'Temporary route change due to construction' }
-            ];
-            
-            const random = notifications[Math.floor(Math.random() * notifications.length)];
-            showNotification(random.title, random.text);
-        }
-
-        // Simulate admin alerts
-        function simulateAdminAlert() {
-            if (currentRole === 'admin') {
-                const alerts = [
-                    { title: 'SOS Alert', text: 'New SOS from Bus #4102' },
-                    { title: 'Overcrowding', text: 'Bus #4305 is overcrowded' },
-                    { title: 'Breakdown', text: 'Bus #4201 reported breakdown' }
-                ];
-                
-                const random = alerts[Math.floor(Math.random() * alerts.length)];
-                showNotification(random.title, random.text);
-            }
-        }
-
-        // Start random notifications
-        setInterval(() => {
-            if (currentRole === 'passenger') {
-                simulatePassengerNotification();
-            } else if (currentRole === 'admin') {
-                simulateAdminAlert();
-            }
-        }, 30000);
-
-        // Handle app visibility changes
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden) {
-                // App is in background
-                console.log('App in background');
-            } else {
-                // App is active
-                console.log('App active');
-            }
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Role selection
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentRole = this.dataset.role;
+                });
+            });
         });
     </script>
 </body>
