@@ -178,6 +178,46 @@
             background: #f44336;
         }
 
+        /* Driver Location Sharing */
+        .driver-share-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .share-location-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .share-location-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .share-location-btn.sharing {
+            background: #ff9800;
+        }
+
+        .share-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+
         /* Passenger View */
         .passenger-view {
             display: none;
@@ -527,12 +567,6 @@
             50% { transform: translateY(-10px); }
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
         .complaint-list {
             margin: 20px;
             background: white;
@@ -867,16 +901,11 @@
                     <span id="locationText">Getting your location...</span>
                 </div>
                 <div class="location-coords" id="locationCoords"></div>
-                <div class="location-toggle">
-                    <span>Share Location</span>
-                    <div class="toggle-switch active" id="locationToggle" onclick="toggleLocationSharing()">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
             </div>
 
-            <!-- Live Map -->
+            <!-- Live Bus Map -->
             <div class="map-container" id="passengerMap">
+                <div style="color: #666; font-size: 16px;">🗺️ Live Bus Locations</div>
                 <div class="map-controls">
                     <button class="map-btn" onclick="centerOnLocation()" title="Center on my location">📍</button>
                     <button class="map-btn" onclick="zoomIn()" title="Zoom in">+</button>
@@ -884,10 +913,10 @@
                 </div>
             </div>
             
-            <!-- Bus Info Card -->
+            <!-- Active Bus Info -->
             <div class="bus-info-card">
                 <div class="eta-display" id="etaDisplay">5 min</div>
-                <div style="color: #666;">Next bus arriving at Stop #123</div>
+                <div style="color: #666;">Bus #4201 arriving at Stop #123</div>
                 
                 <div class="crowd-indicator">
                     <span>Crowd:</span>
@@ -902,8 +931,19 @@
                         Route 42A
                     </span>
                     <span style="background: #f3e5f5; color: #7b1fa2; padding: 5px 10px; border-radius: 15px; font-size: 14px;">
-                        Bus #4201
+                        Driver: Rajesh Kumar
                     </span>
+                </div>
+                
+                <!-- Driver Location Status -->
+                <div style="margin-top: 15px; padding: 10px; background: #f8f9ff; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="location-status location-active"></span>
+                        <span style="font-size: 14px; color: #4caf50;">Driver is sharing live location</span>
+                    </div>
+                    <div id="driverLocationForPassenger" style="font-size: 12px; color: #666; margin-top: 5px;">
+                        Driver location: Updating...
+                    </div>
                 </div>
             </div>
 
@@ -977,6 +1017,16 @@
                     <span>Stop 5 of 15</span>
                     <span>Next: Central Park</span>
                 </div>
+            </div>
+
+            <!-- Driver Location Sharing Section -->
+            <div class="driver-share-section">
+                <h3 style="margin-bottom: 15px; color: white;">Share Your Location</h3>
+                <button class="share-location-btn" id="shareLocationBtn" onclick="toggleDriverLocationSharing()">
+                    <span style="font-size: 24px;">📍</span>
+                    <span id="shareBtnText">Start Sharing Location</span>
+                </button>
+                <div class="share-status" id="shareStatus">Not sharing location</div>
             </div>
 
             <!-- Driver Map -->
@@ -1167,14 +1217,20 @@
                 this.isTracking = false;
                 this.updateInterval = 3000;
                 this.role = 'passenger';
-                this.busLocation = { lat: 28.6139, lng: 77.2090 };
+                this.driverLocation = null; // Store driver's location
+                this.isDriverSharing = false; // Track if driver is sharing location
+                this.passengerMapUpdateInterval = null; // For updating passenger view with driver location
             }
 
             init(role) {
                 this.role = role;
                 this.setupMap();
                 this.startLocationTracking();
-                this.simulateBusTracking();
+                if (role === 'driver') {
+                    this.setupDriverLocationSharing();
+                } else {
+                    this.startPassengerLocationUpdates();
+                }
             }
 
             setupMap() {
@@ -1271,6 +1327,177 @@
                 }
             }
 
+            setupDriverLocationSharing() {
+                // Driver can manually share their location
+                const shareBtn = document.getElementById('shareLocationBtn');
+                const shareStatus = document.getElementById('shareStatus');
+                
+                if (shareBtn && shareStatus) {
+                    shareBtn.addEventListener('click', () => {
+                        this.toggleDriverLocationSharing();
+                    });
+                }
+            }
+
+            toggleDriverLocationSharing() {
+                const shareBtn = document.getElementById('shareLocationBtn');
+                const shareStatus = document.getElementById('shareStatus');
+                
+                if (!this.isDriverSharing) {
+                    this.isDriverSharing = true;
+                    shareBtn.classList.add('sharing');
+                    shareBtn.innerHTML = '<span style="font-size: 24px;">📍</span><span>Stop Sharing Location</span>';
+                    shareStatus.textContent = 'Sharing location with passengers and admin';
+                    shareStatus.style.color = '#4caf50';
+                    
+                    showNotification('Location Sharing', 'Your location is now being shared with passengers and admin');
+                    
+                    // Simulate broadcasting location
+                    this.broadcastDriverLocation();
+                } else {
+                    this.isDriverSharing = false;
+                    shareBtn.classList.remove('sharing');
+                    shareBtn.innerHTML = '<span style="font-size: 24px;">📍</span><span>Start Sharing Location</span>';
+                    shareStatus.textContent = 'Not sharing location';
+                    shareStatus.style.color = '#888';
+                    
+                    showNotification('Location Sharing', 'Location sharing stopped');
+                    
+                    // Stop broadcasting
+                    if (this.driverBroadcastInterval) {
+                        clearInterval(this.driverBroadcastInterval);
+                    }
+                }
+            }
+
+            broadcastDriverLocation() {
+                // Simulate broadcasting driver's location to passengers and admin
+                this.driverBroadcastInterval = setInterval(() => {
+                    if (this.isDriverSharing && this.currentPosition) {
+                        // Store driver location for other users
+                        this.driverLocation = {
+                            lat: this.currentPosition.lat,
+                            lng: this.currentPosition.lng,
+                            busId: '4201',
+                            driverName: 'Rajesh Kumar',
+                            route: '42A',
+                            timestamp: Date.now()
+                        };
+                        
+                        // Update other users' views
+                        this.updatePassengerDriverLocation();
+                        this.updateAdminDriverLocation();
+                    }
+                }, 3000);
+            }
+
+            startPassengerLocationUpdates() {
+                // Start receiving driver location updates
+                this.passengerMapUpdateInterval = setInterval(() => {
+                    this.updatePassengerDriverLocation();
+                }, 3000);
+            }
+
+            updatePassengerDriverLocation() {
+                if (this.driverLocation) {
+                    // Update passenger view with driver location
+                    const driverLocationElement = document.getElementById('driverLocationForPassenger');
+                    if (driverLocationElement) {
+                        driverLocationElement.textContent = `Driver location: ${this.driverLocation.lat.toFixed(4)}, ${this.driverLocation.lng.toFixed(4)}`;
+                    }
+                    
+                    // Update passenger map with driver location
+                    this.updatePassengerMapWithDriver();
+                    
+                    // Calculate distance to bus
+                    if (this.currentPosition) {
+                        const distance = this.calculateDistance(
+                            this.currentPosition.lat,
+                            this.currentPosition.lng,
+                            this.driverLocation.lat,
+                            this.driverLocation.lng
+                        );
+                        
+                        if (distance < 200) { // 200 meters
+                            showNotification('Bus Alert', 'Your bus is very close! Look for Bus #4201');
+                        }
+                    }
+                }
+            }
+
+            updateAdminDriverLocation() {
+                if (this.driverLocation && currentRole === 'admin') {
+                    // Update admin dashboard with live driver locations
+                    const busMarkers = document.querySelectorAll('.bus-marker');
+                    busMarkers.forEach(marker => {
+                        if (marker.textContent === this.driverLocation.busId) {
+                            // Update marker position
+                            const x = this.lngToX(this.driverLocation.lng);
+                            const y = this.latToY(this.driverLocation.lat);
+                            marker.style.left = `${x}%`;
+                            marker.style.top = `${y}%`;
+                        }
+                    });
+                }
+            }
+
+            updatePassengerMapWithDriver() {
+                if (this.driverLocation && currentRole === 'passenger') {
+                    const passengerMap = document.getElementById('passengerMap');
+                    if (passengerMap) {
+                        // Remove existing driver marker
+                        let driverMarker = passengerMap.querySelector('.driver-marker');
+                        
+                        if (!driverMarker) {
+                            driverMarker = document.createElement('div');
+                            driverMarker.className = 'location-marker driver-marker';
+                            driverMarker.innerHTML = '🚌';
+                            driverMarker.style.cssText = `
+                                position: absolute;
+                                width: 40px;
+                                height: 40px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 24px;
+                                background: #ff9800;
+                                border-radius: 50%;
+                                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                cursor: pointer;
+                                border: 3px solid white;
+                                animation: bounce 2s infinite;
+                            `;
+                            passengerMap.querySelector('.live-map').appendChild(driverMarker);
+                        }
+                        
+                        // Update driver marker position
+                        const x = this.lngToX(this.driverLocation.lng);
+                        const y = this.latToY(this.driverLocation.lat);
+                        driverMarker.style.left = `${x}%`;
+                        driverMarker.style.top = `${y}%`;
+                        
+                        // Add bus ID
+                        if (!driverMarker.querySelector('.bus-id')) {
+                            const busId = document.createElement('div');
+                            busId.className = 'bus-id';
+                            busId.style.cssText = `
+                                position: absolute;
+                                top: -5px;
+                                right: -5px;
+                                background: #333;
+                                color: white;
+                                font-size: 10px;
+                                padding: 2px 5px;
+                                border-radius: 3px;
+                                font-weight: bold;
+                            `;
+                            busId.textContent = this.driverLocation.busId;
+                            driverMarker.appendChild(busId);
+                        }
+                    }
+                }
+            }
+
             startBackgroundTracking() {
                 setInterval(() => {
                     if (this.isTracking && this.currentPosition) {
@@ -1287,6 +1514,11 @@
                     
                     this.updateMap();
                     this.updateLocationDisplay();
+                    
+                    // If driver is sharing, update broadcast
+                    if (this.isDriverSharing) {
+                        this.broadcastDriverLocation();
+                    }
                 }
             }
 
@@ -1396,6 +1628,14 @@
                 if (!accuracyCircle) {
                     accuracyCircle = document.createElement('div');
                     accuracyCircle.className = 'accuracy-circle';
+                    accuracyCircle.style.cssText = `
+                        position: absolute;
+                        border: 2px solid #667eea;
+                        border-radius: 50%;
+                        background: rgba(102, 126, 234, 0.1);
+                        pointer-events: none;
+                        z-index: 50;
+                    `;
                     document.querySelector('.live-map').appendChild(accuracyCircle);
                 }
 
@@ -1490,61 +1730,6 @@
                         <div class="stop-distance">${stop.distance.toFixed(1)} km</div>
                     </div>
                 `).join('');
-            }
-
-            simulateBusTracking() {
-                const busData = [
-                    { id: '4201', lat: 28.6139, lng: 77.2090, route: '42A' },
-                    { id: '4102', lat: 28.6150, lng: 77.2080, route: '15B' },
-                    { id: '4305', lat: 28.6120, lng: 77.2100, route: '23C' },
-                    { id: '4401', lat: 28.6140, lng: 77.2070, route: '30X' }
-                ];
-
-                busData.forEach(bus => {
-                    this.createBusMarker(bus);
-                });
-
-                setInterval(() => {
-                    busData.forEach(bus => {
-                        bus.lat += (Math.random() - 0.5) * 0.0005;
-                        bus.lng += (Math.random() - 0.5) * 0.0005;
-                        this.updateBusMarker(bus);
-                    });
-                }, 5000);
-            }
-
-            createBusMarker(busData) {
-                const mapElement = document.querySelector('.live-map');
-                if (!mapElement) return;
-
-                const marker = this.createMarker('bus', busData, '🚌');
-                marker.setAttribute('data-bus-id', busData.id);
-                marker.setAttribute('data-route', busData.route);
-                
-                const busId = document.createElement('div');
-                busId.style.cssText = `
-                    position: absolute;
-                    top: -5px;
-                    right: -5px;
-                    background: #333;
-                    color: white;
-                    font-size: 10px;
-                    padding: 2px 5px;
-                    border-radius: 3px;
-                    font-weight: bold;
-                `;
-                busId.textContent = busData.id;
-                marker.appendChild(busId);
-
-                mapElement.appendChild(marker);
-                this.busMarkers.set(busData.id, marker);
-            }
-
-            updateBusMarker(busData) {
-                const marker = this.busMarkers.get(busData.id);
-                if (marker) {
-                    this.updateMarkerPosition(marker, busData);
-                }
             }
 
             updateRoleSpecificFeatures() {
@@ -1818,6 +2003,24 @@
                 
                 showNotification('Location Error', message);
             }
+
+            stopTracking() {
+                this.isTracking = false;
+                if (this.watchId) {
+                    navigator.geolocation.clearWatch(this.watchId);
+                    this.watchId = null;
+                }
+                if (this.passengerMapUpdateInterval) {
+                    clearInterval(this.passengerMapUpdateInterval);
+                }
+                if (this.driverBroadcastInterval) {
+                    clearInterval(this.driverBroadcastInterval);
+                }
+            }
+
+            getCurrentLocation() {
+                return this.currentPosition;
+            }
         }
 
         // ===== GLOBAL VARIABLES =====
@@ -1826,6 +2029,7 @@
         let locationTracker = null;
         let etaInterval = null;
         let notificationInterval = null;
+        let driverLocationSharing = false;
 
         // ===== LOGIN & ROLE MANAGEMENT =====
         function login() {
@@ -1881,33 +2085,19 @@
             showNotification('Language Changed', `Language set to ${lang === 'en' ? 'English' : lang === 'hi' ? 'Hindi' : 'Local'}`);
         }
 
+        // ===== DRIVER LOCATION SHARING =====
+        function toggleDriverLocationSharing() {
+            if (locationTracker) {
+                locationTracker.toggleDriverLocationSharing();
+            }
+        }
+
         // ===== LOCATION TRACKING =====
         function initializeLocationTracking(role) {
             if (!locationTracker) {
                 locationTracker = new LiveLocationTracker();
             }
             locationTracker.init(role);
-        }
-
-        function toggleLocationSharing() {
-            const toggle = document.getElementById('locationToggle');
-            const locationDisplay = document.querySelector('.location-display');
-            
-            if (toggle.classList.contains('active')) {
-                toggle.classList.remove('active');
-                if (locationTracker) {
-                    locationTracker.stopTracking();
-                }
-                locationDisplay.style.opacity = '0.5';
-                showNotification('Location Sharing', 'Location sharing disabled');
-            } else {
-                toggle.classList.add('active');
-                if (locationTracker) {
-                    locationTracker.startLocationTracking();
-                }
-                locationDisplay.style.opacity = '1';
-                showNotification('Location Sharing', 'Location sharing enabled');
-            }
         }
 
         function centerOnLocation() {
@@ -1970,113 +2160,112 @@
             }, 20000);
         }
 
-        // ===== ADMIN FEATURES =====
-        function startAdminFeatures() {
-            setInterval(() => {
-                const statValues = document.querySelectorAll('.stat-card .value');
-                statValues[0].textContent = Math.floor(Math.random() * 30) + 20;
-                statValues[1].textContent = Math.floor(Math.random() * 2000) + 1000;
-            }, 10000);
-        }
+        // =====ADMIN FEATURES =====
+function startAdminFeatures() {
+setInterval(() => {
+const statValues = document.querySelectorAll('.stat-card .value');
+statValues[0].textContent = Math.floor(Math.random() * 30) + 20;
+statValues[1].textContent = Math.floor(Math.random() * 2000) + 1000;
+}, 10000);
+}
+    // ===== MODAL FUNCTIONS =====
+    function showSOSModal() {
+        document.getElementById('sosModal').classList.add('show');
+    }
 
-        // ===== MODAL FUNCTIONS =====
-        function showSOSModal() {
-            document.getElementById('sosModal').classList.add('show');
-        }
+    function showComplaintModal() {
+        document.getElementById('complaintModal').classList.add('show');
+    }
 
-        function showComplaintModal() {
-            document.getElementById('complaintModal').classList.add('show');
-        }
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        function sendSOS() {
-            closeModal('sosModal');
-            showNotification('SOS Sent', 'Emergency alert has been sent to admin with your location');
-            
-            setTimeout(() => {
-                if (currentRole === 'admin') {
-                    showNotification('SOS Alert', 'New SOS from Bus #4201 at your location');
-                }
-            }, 2000);
-        }
-
-        function submitComplaint() {
-            closeModal('complaintModal');
-            showNotification('Complaint Filed', 'Your complaint has been submitted successfully with location data');
-        }
-
-        // ===== ACTION FUNCTIONS =====
-        function saveRoute() {
-            showNotification('Route Saved', 'Route 42A has been saved to your favorites');
-        }
-
-        function viewSavedRoutes() {
-            showNotification('Saved Routes', 'You have 3 saved routes');
-        }
-
-        function reportAccident() {
-            const locationText = locationTracker && locationTracker.getCurrentLocation() ? 
-                `Lat: ${locationTracker.getCurrentLocation().lat.toFixed(6)}, Lng: ${locationTracker.getCurrentLocation().lng.toFixed(6)}` : 
-                'Location unavailable';
-            
-            showNotification('Accident Reported', `Admin has been notified about the accident at ${locationText}`);
-        }
-
-        function reportRoadIssue() {
-            showNotification('Road Issue Reported', 'Thank you for reporting the road issue with location');
-        }
-
-        function endTrip() {
-            if (confirm('Are you sure you want to end the trip?')) {
-                showNotification('Trip Ended', 'Your trip has been completed successfully');
+    function sendSOS() {
+        closeModal('sosModal');
+        showNotification('SOS Sent', 'Emergency alert has been sent to admin with your location');
+        
+        setTimeout(() => {
+            if (currentRole === 'admin') {
+                showNotification('SOS Alert', 'New SOS from Bus #4201 at your location');
             }
-        }
+        }, 2000);
+    }
 
-        // ===== NAVIGATION =====
-        function showView(view) {
-            currentView = view;
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-            
-            if (view === 'map') {
-                showNotification('Map View', 'Opening map with real-time locations');
-            } else if (view === 'alerts') {
-                showNotification('Alerts', 'You have 3 new alerts');
-            } else if (view === 'profile') {
-                showNotification('Profile', 'Profile feature coming soon');
-            }
-        }
+    function submitComplaint() {
+        closeModal('complaintModal');
+        showNotification('Complaint Filed', 'Your complaint has been submitted successfully with location data');
+    }
 
-        // ===== NOTIFICATIONS =====
-        function showNotification(title, text) {
-            const notification = document.getElementById('notification');
-            document.getElementById('notificationTitle').textContent = title;
-            document.getElementById('notificationText').textContent = text;
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
+    // ===== ACTION FUNCTIONS =====
+    function saveRoute() {
+        showNotification('Route Saved', 'Route 42A has been saved to your favorites');
+    }
 
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Role selection
-            document.querySelectorAll('.role-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentRole = this.dataset.role;
-                });
+    function viewSavedRoutes() {
+        showNotification('Saved Routes', 'You have 3 saved routes');
+    }
+
+    function reportAccident() {
+        const locationText = locationTracker && locationTracker.getCurrentLocation() ? 
+            `Lat: ${locationTracker.getCurrentLocation().lat.toFixed(6)}, Lng: ${locationTracker.getCurrentLocation().lng.toFixed(6)}` : 
+            'Location unavailable';
+        
+        showNotification('Accident Reported', `Admin has been notified about the accident at ${locationText}`);
+    }
+
+    function reportRoadIssue() {
+        showNotification('Road Issue Reported', 'Thank you for reporting the road issue with location');
+    }
+
+    function endTrip() {
+        if (confirm('Are you sure you want to end the trip?')) {
+            showNotification('Trip Ended', 'Your trip has been completed successfully');
+        }
+    }
+
+    // ===== NAVIGATION =====
+    function showView(view) {
+        currentView = view;
+        
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.target.closest('.nav-item').classList.add('active');
+        
+        if (view === 'map') {
+            showNotification('Map View', 'Opening map with real-time locations');
+        } else if (view === 'alerts') {
+            showNotification('Alerts', 'You have 3 new alerts');
+        } else if (view === 'profile') {
+            showNotification('Profile', 'Profile feature coming soon');
+        }
+    }
+
+    // ===== NOTIFICATIONS =====
+    function showNotification(title, text) {
+        const notification = document.getElementById('notification');
+        document.getElementById('notificationTitle').textContent = title;
+        document.getElementById('notificationText').textContent = text;
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    // ===== INITIALIZATION =====
+    document.addEventListener('DOMContentLoaded', function() {
+        // Role selection
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentRole = this.dataset.role;
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
